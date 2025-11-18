@@ -3,6 +3,9 @@ import Hero from './components/Hero'
 import Products from './components/Products'
 import OrderForm from './components/OrderForm'
 import Contact from './components/Contact'
+import Story from './components/Story'
+import Gallery from './components/Gallery'
+import Reviews from './components/Reviews'
 
 function App() {
   return (
@@ -11,6 +14,9 @@ function App() {
       <Hero />
       <Products />
       <OrderForm />
+      <Story />
+      <Gallery />
+      <Reviews />
       <Contact />
       <footer className="py-10 bg-gray-900 text-gray-300">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">

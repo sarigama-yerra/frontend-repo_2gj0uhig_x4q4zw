@@ -22,6 +22,18 @@ function Products() {
     fetchProducts()
   }, [])
 
+  const formatLead = (p) => {
+    if (p.available_today) return 'Available today'
+    if (p.lead_time_hours > 0) {
+      const days = Math.floor(p.lead_time_hours / 24)
+      const hours = p.lead_time_hours % 24
+      if (days > 0 && hours > 0) return `${days}d ${hours}h lead time`
+      if (days > 0) return `${days}d lead time`
+      return `${hours}h lead time`
+    }
+    return 'Preorder'
+  }
+
   return (
     <section id="products" className="py-16 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -44,14 +56,27 @@ function Products() {
                 <div className="p-5">
                   <div className="flex items-start justify-between gap-2">
                     <h3 className="text-lg font-bold text-gray-900">{p.name}</h3>
-                    <span className="font-semibold text-emerald-700">${p.price.toFixed(2)}</span>
+                    <div className="text-right">
+                      <span className="block font-semibold text-emerald-700">${(p.special_price ?? p.price).toFixed(2)}</span>
+                      {p.is_special && (
+                        <span className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5">Special</span>
+                      )}
+                    </div>
                   </div>
                   <p className="mt-2 text-sm text-gray-600">{p.description}</p>
-                  <div className="mt-3 flex items-center gap-2 text-xs">
+                  <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
                     <span className="px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">{p.flavor}</span>
                     {p.vegan && <span className="px-2 py-1 rounded-full bg-green-50 text-green-700 border border-green-200">Vegan</span>}
                     {p.organic && <span className="px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">Organic</span>}
+                    <span className={`px-2 py-1 rounded-full border text-gray-700 ${p.available_today ? 'bg-purple-50 border-purple-200' : 'bg-gray-50 border-gray-200'}`}>{formatLead(p)}</span>
                   </div>
+                  {!!(p.tags && p.tags.length) && (
+                    <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-gray-700">
+                      {p.tags.map((t, i) => (
+                        <span key={i} className="px-2 py-0.5 rounded-full bg-gray-50 border border-gray-200">{t}</span>
+                      ))}
+                    </div>
+                  )}
                   <a href="#order" className="mt-4 inline-flex items-center justify-center w-full bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700">Order</a>
                 </div>
               </div>

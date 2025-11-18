@@ -7,7 +7,13 @@ function OrderForm() {
     phone: '',
     product_name: 'Chocolate Sweet Bread',
     quantity: 1,
-    notes: ''
+    notes: '',
+    fulfillment_method: 'pickup',
+    pickup_time: '',
+    delivery_time: '',
+    delivery_address: '',
+    notify_via: 'email',
+    whatsapp: ''
   })
   const [status, setStatus] = useState({ type: '', message: '' })
   const [loading, setLoading] = useState(false)
@@ -23,20 +29,29 @@ function OrderForm() {
     setStatus({ type: '', message: '' })
     try {
       const baseUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
+      const payload = { ...form }
+      // Coerce empty time strings to undefined to satisfy backend optional datetime
+      if (!payload.pickup_time) delete payload.pickup_time
+      if (!payload.delivery_time) delete payload.delivery_time
+      if (!payload.delivery_address) delete payload.delivery_address
+      if (!payload.whatsapp) delete payload.whatsapp
+
       const res = await fetch(`${baseUrl}/api/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
+        body: JSON.stringify(payload)
       })
       if (!res.ok) throw new Error('Failed to place order')
       setStatus({ type: 'success', message: 'Thank you! Your order has been received.' })
-      setForm({ customer_name: '', email: '', phone: '', product_name: 'Chocolate Sweet Bread', quantity: 1, notes: '' })
+      setForm({ customer_name: '', email: '', phone: '', product_name: 'Chocolate Sweet Bread', quantity: 1, notes: '', fulfillment_method: 'pickup', pickup_time: '', delivery_time: '', delivery_address: '', notify_via: 'email', whatsapp: '' })
     } catch (e) {
       setStatus({ type: 'error', message: e.message })
     } finally {
       setLoading(false)
     }
   }
+
+  const isDelivery = form.fulfillment_method === 'delivery'
 
   return (
     <section id="order" className="py-16 bg-emerald-50">
@@ -77,9 +92,58 @@ function OrderForm() {
               <label className="block text-sm font-medium text-gray-700">Quantity</label>
               <input type="number" min="1" max="50" name="quantity" value={form.quantity} onChange={onChange} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
             </div>
+
+            <div className="sm:col-span-2 pt-2">
+              <label className="block text-sm font-medium text-gray-700">Fulfillment</label>
+              <div className="mt-1 flex gap-4">
+                <label className="inline-flex items-center gap-2 text-sm">
+                  <input type="radio" name="fulfillment_method" value="pickup" checked={form.fulfillment_method==='pickup'} onChange={onChange} /> Pickup
+                </label>
+                <label className="inline-flex items-center gap-2 text-sm">
+                  <input type="radio" name="fulfillment_method" value="delivery" checked={form.fulfillment_method==='delivery'} onChange={onChange} /> Delivery
+                </label>
+              </div>
+            </div>
+
+            {form.fulfillment_method === 'pickup' && (
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-gray-700">Pickup time</label>
+                <input type="datetime-local" name="pickup_time" value={form.pickup_time} onChange={onChange} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                <p className="mt-1 text-xs text-gray-500">Same-day available for items marked "Available today". Otherwise allow lead time shown on menu.</p>
+              </div>
+            )}
+
+            {isDelivery && (
+              <>
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700">Delivery time</label>
+                  <input type="datetime-local" name="delivery_time" value={form.delivery_time} onChange={onChange} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700">Delivery address</label>
+                  <input name="delivery_address" value={form.delivery_address} onChange={onChange} placeholder="Street, City, ZIP" className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                </div>
+              </>
+            )}
+
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700">Notes</label>
+              <label className="block text-sm font-medium text-gray-700">Order notes</label>
               <textarea name="notes" value={form.notes} onChange={onChange} rows="3" className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            </div>
+
+            <div className="sm:col-span-2 pt-2">
+              <label className="block text-sm font-medium text-gray-700">Notifications</label>
+              <div className="mt-1 flex flex-wrap gap-4 items-center">
+                <label className="inline-flex items-center gap-2 text-sm">
+                  <input type="radio" name="notify_via" value="email" checked={form.notify_via==='email'} onChange={onChange} /> Email
+                </label>
+                <label className="inline-flex items-center gap-2 text-sm">
+                  <input type="radio" name="notify_via" value="whatsapp" checked={form.notify_via==='whatsapp'} onChange={onChange} /> WhatsApp
+                </label>
+                {form.notify_via==='whatsapp' && (
+                  <input name="whatsapp" value={form.whatsapp} onChange={onChange} placeholder="WhatsApp number e.g. +1 555 555 5555" className="rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 w-full sm:w-auto flex-1" />
+                )}
+              </div>
             </div>
           </div>
 

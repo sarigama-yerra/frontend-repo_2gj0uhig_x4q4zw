@@ -19,13 +19,17 @@ function Hero() {
             <a href="#products" className="inline-flex items-center bg-white text-emerald-700 border border-emerald-200 px-5 py-3 rounded-lg hover:bg-emerald-50">View Menu</a>
           </div>
 
-          <div className="mt-6 text-sm text-gray-600 flex items-center gap-3">
+          <div className="mt-6 text-sm text-gray-600 flex flex-wrap items-center gap-3">
             <div className="flex -space-x-2">
               <img className="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://i.pravatar.cc/32?img=12" />
               <img className="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://i.pravatar.cc/32?img=25" />
               <img className="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://i.pravatar.cc/32?img=5" />
             </div>
-            <span>Loved by 500+ happy bread lovers</span>
+            <span> Loved by 500+ bread lovers</span>
+            <span className="hidden sm:inline text-gray-400">•</span>
+            <span className="text-emerald-700">Pickup & delivery available</span>
+            <span className="hidden sm:inline text-gray-400">•</span>
+            <span>Same-day on select items</span>
           </div>
         </div>
 
